@@ -14,6 +14,12 @@ Easily monitor balances across multiple addresses and blockchains so you **never
 
 ---
 
+## TODO
+- Portfolio history tracking.
+- Local Storage of Private Keys for better usefulness
+
+---
+
 ## 📦 Installation
 
 ```bash
