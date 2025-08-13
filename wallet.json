@@ -1,0 +1,39 @@
+{
+  "wallets": [
+    {
+      "id": 1,
+      "name": "Paradex Trading",
+      "platform": "Paradex",
+      "address": "0xabc123...",
+      "value": 240.0
+    },
+    {
+      "id": 2,
+      "name": "Paradex put/call",
+      "platform": "Paradex",
+      "address": "0xdef456...",
+      "value": 35.0
+    },
+    {
+      "id": 3,
+      "name": "EVM Metamask",
+      "platform": "Metamask",
+      "address": "0xdef456...",
+      "value": 135.0
+    },
+    {
+      "id": 4,
+      "name": "SOL Phantom",
+      "platform": "Phantom",
+      "address": "0xdef456...",
+      "value": 40
+    },
+    {
+      "id": 5,
+      "name": "$LOL",
+      "platform": "BlackNode",
+      "address": "0xdef456...",
+      "value": 21
+    }
+  ]
+}
