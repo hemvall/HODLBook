@@ -5,20 +5,23 @@
       "name": "Paradex Trading",
       "platform": "Paradex",
       "address": "0xabc123...",
-      "value": 240.0
+      "key": "secret...",
+      "value": 258.0
     },
     {
       "id": 2,
       "name": "Paradex put/call",
       "platform": "Paradex",
       "address": "0xdef456...",
-      "value": 35.0
+      "key": "secret...",
+      "value": 37.0
     },
     {
       "id": 3,
       "name": "EVM Metamask",
       "platform": "Metamask",
       "address": "0xdef456...",
+      "key": "secret...",
       "value": 135.0
     },
     {
@@ -26,6 +29,7 @@
       "name": "SOL Phantom",
       "platform": "Phantom",
       "address": "0xdef456...",
+      "key": "secret...",
       "value": 40
     },
     {
@@ -33,6 +37,7 @@
       "name": "$LOL",
       "platform": "BlackNode",
       "address": "0xdef456...",
+      "key": "secret...",
       "value": 21
     }
   ]

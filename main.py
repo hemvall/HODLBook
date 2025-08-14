@@ -1,148 +1,204 @@
-import json
-import os
-import sys
-import time
+from InquirerPy import inquirer
 from colorama import init, Fore, Style
+import json, os, time
 
-# Init colorama
 init(autoreset=True)
 
-FILE = "wallet.json"
+WALLET_FILE = "wallet.json"
+ASSET_FILE = "assets.json"
 
-def ascii_banner():
-    print(Fore.LIGHTRED_EX + Style.BRIGHT + r"""
-⡶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⠶⢶
-⡇⠀⠀⠀⠀⠀⠀⠀                                                      ⡇
-⡇⠀        ██████╗░██████╗░░█████╗░██╗░░██╗███████╗             ⡇⠀
-⡇⠀        ██╔══██╗██╔══██╗██╔══██╗██║░██╔╝██╔════╝             ⡇⠀
-⡇⠀        ██████╦╝██████╔╝██║░░██║█████═╝░█████╗░░             ⡇⠀
-⡇⠀        ██╔══██╗██╔══██╗██║░░██║██╔═██╗░██╔══╝░░             ⡇
-⡇⠀        ██████╦╝██║░░██║╚█████╔╝██║░╚██╗███████╗             ⡇⠀
-⡇⠀        ╚═════╝░╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝╚══════╝             ⡇⠀
-⡇⠀                                                            ⡇⠀
-⡷⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⢶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⣶⡾
-⠀⠀⠀⠉⠉⠉⠉⣽⡿⠁⣠⣾⡿⠾⣯⣿⠿⠯⢭⣉⠉⠉⠉⠉⣉⣭⣿⡯⠽⠯⢭⣟⡫⣽⣿⣁⣠⣦⣄⠉⠳⣿⣍⠉⠉⠉⠉⠉⠁⠀
-⠀⠀⠀⠀⠀⠀⢸⣿⠃⢠⣿⣿⣴⣾⠿⠛⠋⠉⠛⠲⠯⣵⣶⡯⠟⠋⢁⣀⣠⣤⣤⣬⣽⣾⣿⣿⣻⣿⣿⣷⣄⠘⣿⡄⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢸⣿⠀⢸⣿⡿⠛⢁⣤⠶⠛⠋⠉⠉⠛⠻⢿⠤⡴⠞⠛⣉⣽⠿⠛⢉⣠⣤⣤⢤⣝⣿⣿⣿⣿⡄⢸⣿⡀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢸⡇⠀⢸⡏⠀⠰⠋⠁⠀⠀⢀⣤⣶⣾⣿⣿⡤⠤⠤⣾⣋⢀⡤⠞⢫⣿⣿⣿⣷⡄⠉⠻⣿⣿⡇⠀⣿⠁⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢸⡇⠀⢸⣇⠀⠀⠀⢀⣠⠾⢋⡵⢋⣿⢻⣿⠿⣶⡄⠀⢹⠋⠀⠀⣿⣿⢿⣧⣿⣿⣀⣠⣿⣿⠁⠀⣿⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢸⡇⠀⢸⣿⠀⠀⠚⠛⣷⡞⠋⠀⢸⣿⣟⢿⣶⣿⣧⣠⡿⣤⣤⣤⣽⡿⠿⠛⠛⢉⣿⣿⣿⡿⠀⠀⣿⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢸⡇⠀⠈⣿⠀⠀⠀⣀⣀⣉⣻⣶⣤⣿⣿⠿⠟⠛⠉⠁⠀⠀⠀⠀⣀⣀⣠⣤⠾⠋⢉⣿⣿⡇⠀⠀⣿⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢸⡇⠀⠀⣿⡆⢠⣾⠋⠉⣩⣉⣉⣙⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⢛⣉⣉⣡⣤⡶⠾⣿⣿⣿⠁⠀⢠⣿⡄⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢸⣇⠀⠀⢻⡇⠈⠛⠶⣦⣬⣉⣉⣙⡛⠛⠛⠛⠛⠛⠛⠛⠛⢛⣛⣉⣉⣉⣠⣤⣶⣿⠟⠁⠀⢀⣾⡿⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⢸⣿⠀⠀⠘⣿⣤⡀⠀⠀⠈⠉⠉⠉⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠋⠉⠉⠉⢁⣠⣼⣏⠀⣀⣴⡿⠋⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠈⣿⣧⠀⠀⠘⢿⣿⢷⣦⣄⣀⠀⠀⠀⠀⠀⣀⣀⣀⣀⣀⣀⣀⣠⣤⣶⠿⠛⠉⢨⣿⣿⠟⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠘⣿⣧⡀⠀⠀⣿⠀⠈⠉⠛⠛⠿⠿⠿⠿⠛⠛⠛⠛⠛⠛⠛⠋⠉⠀⠀⠀⠀⠈⠛⢾⣢⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⣾⡿⢿⣦⣴⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣿⠄⠀⠀⠀⠀
+
+# ===== Helpers =====
+def load_data(file, key):
+    if os.path.exists(file):
+        with open(file, "r") as f:
+            return json.load(f)
+    return {key: []}
+
+
+def save_data(file, data):
+    with open(file, "w") as f:
+        json.dump(data, f, indent=2)
+
+
+# ===== ASCII Banner =====
+def banner():
+    print(Fore.LIGHTCYAN_EX + Style.BRIGHT + r"""
+██████╗░██████╗░░█████╗░██╗░░██╗███████╗
+██╔══██╗██╔══██╗██╔══██╗██║░██╔╝██╔════╝
+██████╦╝██████╔╝██║░░██║█████═╝░█████╗░░
+██╔══██╗██╔══██╗██║░░██║██╔═██╗░██╔══╝░░
+██████╦╝██║░░██║╚█████╔╝██║░╚██╗███████╗
+╚═════╝░╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝╚══════╝
     """ + Style.RESET_ALL)
-    print(Fore.YELLOW + "        HODLBook : Your Ultimate Crypto Portfolio Tracker\n" + Style.RESET_ALL)
+    print(Fore.YELLOW + "HODLBook : Track Crypto & All Your Assets\n" + Style.RESET_ALL)
 
-def loading_animation(text="Loading portfolio", duration=2.5, speed=0.1):
+
+# ===== Loading Animation =====
+def loading_animation(text="Loading", duration=1.2):
     dots = 0
     start_time = time.time()
-    sys.stdout.write(Fore.MAGENTA + Style.BRIGHT + text)
-    sys.stdout.flush()
+    print(Fore.MAGENTA + text, end="", flush=True)
     while time.time() - start_time < duration:
-        sys.stdout.write('.')
-        sys.stdout.flush()
-        time.sleep(speed)
+        print('.', end='', flush=True)
+        time.sleep(0.2)
         dots += 1
         if dots == 3:
-            sys.stdout.write('\b\b\b   \b\b\b')
+            print('\b\b\b   \b\b\b', end='', flush=True)
             dots = 0
     print(Style.RESET_ALL)
 
-def load_wallet():
-    if os.path.exists(FILE):
-        with open(FILE, "r") as f:
-            return json.load(f)
-    else:
-        return {"wallets": []}
 
-def save_wallet(data):
-    with open(FILE, "w") as f:
-        json.dump(data, f, indent=2)
-
-def show_wallet(wallet):
-    total_usd = 0
-    total_eur = 0
-    print(Fore.GREEN + Style.BRIGHT + "\n=== PORTFOLIO ===" + Style.RESET_ALL)
-
-    if not wallet["wallets"]:
-        print(Fore.RED + "No wallets found. Add one to get started.\n")
+# ===== Display Portfolio =====
+def show_items(data, key):
+    if not data[key]:
+        print(Fore.RED + "No entries found.")
         return
 
-    for w in wallet["wallets"]:
-        print(Fore.CYAN + f'[{w["id"]}] ' + Fore.WHITE + f'{w["name"]} {Fore.YELLOW}({w["platform"]})')
-        print(Fore.MAGENTA + f'  Address: {Fore.WHITE}{w["address"]}')
-        print(Fore.GREEN + f'  Value: {Fore.WHITE}${w["value"]}\n')
-        total_usd += w["value"]
+    loading_animation()
 
-    total_eur = total_usd * 0.85
-    print(Fore.YELLOW + Style.BRIGHT + f"""
-████████████████████████████████████████████████████████████████
-█   Total USD: {Fore.WHITE}${total_usd:,.2f}                                         {Fore.YELLOW}█
-█   Total EUR: {Fore.WHITE}€{total_eur:,.2f}                                         {Fore.YELLOW}█
-████████████████████████████████████████████████████████████████
-    \n""")
+    # Charger le total crypto si on est dans "assets"
+    extra_crypto_value_eur = 0
+    if key == "assets" and os.path.exists(WALLET_FILE):
+        wallets_data = load_data(WALLET_FILE, "wallets")
+        total_wallets_usd = sum(w["value"] for w in wallets_data["wallets"])
+        extra_crypto_value_eur = total_wallets_usd * 0.85  # conversion USD → EUR
+        # Ajouter une entrée fictive dans les assets pour affichage
+        data[key].append({
+            "id": len(data[key]) + 1,
+            "name": "Crypto (total)",
+            "category": "Crypto",
+            "value": extra_crypto_value_eur
+        })
 
-def add_wallet(wallet):
-    name = input(Fore.CYAN + "Wallet Name: ")
-    platform = input(Fore.CYAN + "Platform: ")
-    address = input(Fore.CYAN + "Address: ")
-    try:
-        value = float(input(Fore.CYAN + "Value (USD): "))
-    except ValueError:
-        print(Fore.RED + "Invalid value, setting to 0.")
-        value = 0
+    # Calcul du total en tenant compte des dettes
+    total = 0
+    for i in data[key]:
+        if i.get("category", "").lower() == "debt":
+            total -= i["value"]
+        else:
+            total += i["value"]
 
-    new_id = len(wallet["wallets"]) + 1
-    wallet["wallets"].append({
+    print(Fore.GREEN + f"\n=== {key.upper()} ===\n" + Style.RESET_ALL)
+
+    # Affichage détaillé
+    for i in data[key]:
+        is_debt = i.get("category", "").lower() == "debt"
+        signed_value = -i["value"] if is_debt else i["value"]
+
+        percentage = (abs(signed_value) / abs(total) * 100) if total != 0 else 0
+        bar = "█" * int(percentage / 2)
+
+        extra_info = i.get("platform", i.get("category", ""))
+        color = Fore.RED if is_debt else Fore.CYAN
+        sign = "-" if is_debt else ""
+
+        print(color + f"[{i['id']}] {i['name']} ({extra_info})")
+        print(
+            Fore.WHITE
+            + f"  {sign}${i['value']:,.2f}  ({percentage:.1f}%) "
+            + (Fore.LIGHTRED_EX if is_debt else Fore.LIGHTYELLOW_EX)
+            + bar
+        )
+        print(
+            Fore.WHITE + f"  Wallet Address : {i['address']}\n  Private Key : {i['key']}\n\n"
+        )
+
+    print(Fore.YELLOW + Style.BRIGHT + "╔════════════════════════════╗")
+    print(f"║  TOTAL : {total:,.2f}€      ║")
+    print(Fore.YELLOW + Style.BRIGHT + "╚════════════════════════════╝" + Style.RESET_ALL)
+
+    # Retirer l'entrée crypto fictive pour éviter de l'ajouter en vrai au fichier
+    if key == "assets":
+        data[key] = [i for i in data[key] if i["name"] != "Crypto (total)"]
+
+
+# ===== CRUD =====
+def add_item(data, key, extra_field):
+    name = input("Name: ")
+    extra = input(f"{extra_field}: ")
+    value = float(input("Value (USD): "))
+    new_id = len(data[key]) + 1
+    data[key].append({
         "id": new_id,
         "name": name,
-        "platform": platform,
-        "address": address,
+        extra_field.lower(): extra,
         "value": value
     })
-    save_wallet(wallet)
-    print(Fore.GREEN + "Wallet added successfully!")
+    save_data(WALLET_FILE if key == "wallets" else ASSET_FILE, data)
+    print(Fore.GREEN + "Added successfully!")
 
-def delete_wallet(wallet):
-    try:
-        wallet_id = int(input(Fore.CYAN + "Enter wallet ID to delete: "))
-    except ValueError:
-        print(Fore.RED + "Invalid ID.")
-        return
-    wallet["wallets"] = [w for w in wallet["wallets"] if w["id"] != wallet_id]
-    save_wallet(wallet)
-    print(Fore.GREEN + f"Wallet {wallet_id} deleted.")
 
-def menu():
-    wallet = load_wallet()
+def delete_item(data, key):
+    item_id = int(input("Enter ID to delete: "))
+    data[key] = [i for i in data[key] if i["id"] != item_id]
+    save_data(WALLET_FILE if key == "wallets" else ASSET_FILE, data)
+    print(Fore.RED + "Deleted.")
+
+
+def edit_item(data, key, extra_field):
+    item_id = int(input("Enter ID to edit: "))
+    for i in data[key]:
+        if i["id"] == item_id:
+            i["name"] = input(f"Name [{i['name']}]: ") or i["name"]
+            i[extra_field.lower()] = input(f"{extra_field} [{i[extra_field.lower()]}]: ") or i[extra_field.lower()]
+            val = input(f"Value (USD) [{i['value']}]: ")
+            if val:
+                i["value"] = float(val)
+            save_data(WALLET_FILE if key == "wallets" else ASSET_FILE, data)
+            print(Fore.GREEN + "Updated!")
+            return
+    print(Fore.RED + "Not found.")
+
+
+# ===== Submenu for wallet/assets =====
+def manage_section(file, key, extra_field):
+    data = load_data(file, key)
     while True:
-        print(Fore.YELLOW + "\n--- MENU ---")
-        print("1. Show portfolio")
-        print("2. Add wallet")
-        print("3. Delete wallet")
-        print("4. Exit")
-        choice = input(Fore.CYAN + "Choose an option: ")
+        action = inquirer.select(
+            message=f"\n\n--- Manage {key} ---",
+            choices=[
+                "Show all",
+                f"Add {extra_field}",
+                "Edit",
+                "Delete",
+                "⬅ Back"
+            ],
+        ).execute()
 
-        if choice == "1":
-            show_wallet(wallet)
-        elif choice == "2":
-            add_wallet(wallet)
-        elif choice == "3":
-            delete_wallet(wallet)
-        elif choice == "4":
+        if action.startswith("S"):
+            show_items(data, key)
+        elif action.startswith("A"):
+            add_item(data, key, extra_field)
+        elif action.startswith("E"):
+            edit_item(data, key, extra_field)
+        elif action.startswith("D"):
+            delete_item(data, key)
+        elif action.startswith("⬅"):
+            break
+
+
+# ===== Main Menu =====
+def main():
+    banner()
+    while True:
+        action = inquirer.select(
+            message="--- Main Menu ---",
+            choices=[
+                "Assets",
+                "Crypto Wallets",
+                "Exit"
+            ],
+        ).execute()
+
+        if action.startswith("C"):
+            manage_section(WALLET_FILE, "wallets", "Platform")
+        elif action.startswith("A"):
+            manage_section(ASSET_FILE, "assets", "Category")
+        elif action.startswith("E"):
             print(Fore.MAGENTA + "Goodbye!")
             break
-        else:
-            print(Fore.RED + "Invalid choice.")
 
-def main():
-    ascii_banner()
-    loading_animation()
-    menu()
 
 if __name__ == "__main__":
     main()
