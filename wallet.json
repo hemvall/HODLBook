@@ -4,23 +4,23 @@
       "id": 1,
       "name": "Paradex Trading",
       "platform": "Paradex",
-      "address": "0xabc123...",
-      "key": "secret...",
+      "address": "0x60f5543b3fdbcf4b2cf05617905baf7d45074ddbf5f90dde81786f7617328cc",
+      "key": "...",
       "value": 258.0
     },
     {
       "id": 2,
       "name": "Paradex put/call",
       "platform": "Paradex",
-      "address": "0xdef456...",
-      "key": "secret...",
+      "address": "0x60f5543b3fdbcf4b2cf05617905baf7d45074ddbf5f90dde81786f7617328cc",
+      "key": "...",
       "value": 37.0
     },
     {
       "id": 3,
       "name": "EVM Metamask",
       "platform": "Metamask",
-      "address": "0xdef456...",
+      "address": "0x020143335aB18bdf9e143EFB653A05A7be9D06FD",
       "key": "secret...",
       "value": 135.0
     },

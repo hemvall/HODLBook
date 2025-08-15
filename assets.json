@@ -34,7 +34,19 @@
       "id": 6,
       "name": "Cash",
       "category": "Savings",
-      "value": 900.0
+      "value": 600.0
+    },
+    {
+      "id": 7,
+      "name": "Romain",
+      "category": "Debt",
+      "value": 1800.0
+    },
+    {
+      "id": 8,
+      "name": "Car",
+      "category": "Car",
+      "value": 8000.0
     }
   ]
 }
