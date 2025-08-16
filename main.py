@@ -105,7 +105,7 @@ def show_items(data, key):
         )
 
     print(Fore.YELLOW + Style.BRIGHT + "╔════════════════════════════╗")
-    print(f"║  TOTAL : {total:,.2f}€      ║")
+    print(f"║  TOTAL : {total:,.2f}$ (={total*0.85}€)     ║")
     print(Fore.YELLOW + Style.BRIGHT + "╚════════════════════════════╝" + Style.RESET_ALL)
 
     # Retirer l'entrée crypto fictive pour éviter de l'ajouter en vrai au fichier
